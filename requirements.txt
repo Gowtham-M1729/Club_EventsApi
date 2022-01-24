@@ -1,0 +1,8 @@
+apscheduler==3.8.1
+Flask==2.0.2
+flask_apscheduler==1.12.3
+instagramy==4.4
+passlib==1.7.4
+pymongo==4.0.1
+schedule==1.1.0
+gunicorn==20.1.0
