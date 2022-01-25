@@ -16,7 +16,7 @@ db = client.College
 
 class Bookmarks:
     def bookmark(self,email,short_code,club_name):
-        if db.bookmark.findOne({"short_code": short_code}):
+        if db.bookmark.find_one({"short_code": short_code,'email':email}):
             return jsonify({'error':"Already Bookmarked"})
         var={
             "_id": uuid.uuid4().hex,
@@ -24,7 +24,7 @@ class Bookmarks:
             'short_code':short_code,
             'club_name':club_name
         }
-        db.evnts.insert_one(var)
+        db.bookmark.insert_one(var)
 
     def delet(self,email,short_code):
         db.bookmark.delete_one({"short_code":short_code,"email":email})
