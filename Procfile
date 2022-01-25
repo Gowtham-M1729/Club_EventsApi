@@ -1,1 +1,2 @@
-web: python3 app.py
+heroku ps:scale web=1
+web: gunicorn app:app
