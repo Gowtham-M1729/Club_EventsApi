@@ -5,11 +5,13 @@ from flask import Flask, jsonify, request, session, redirect, url_for
 from passlib.hash import pbkdf2_sha256
 import uuid
 from flask_apscheduler import  APScheduler
-from ClubEvents import bookmarks,instascrappe
+from ClubEvents import bookmarks
 import  schedule
 from apscheduler.schedulers.background import BackgroundScheduler
 import  time
 import atexit
+import zoneinfo
+NYC = zoneinfo.ZoneInfo("America/New_York")
 app = Flask(__name__)
 app.secret_key = b'\xcc^\x91\xea\x17-\xd0W\x03\xa7\xf8J0\xac8\xc5'
 scheduler=APScheduler()
@@ -129,6 +131,7 @@ def login():
 
 @app.route('/clubevents')
 def events():
+    from ClubEvents import instascrappe
     club_names=['linuxcampusclub','gdscjssstu']
     for club in club_names:
         ob=instascrappe.Clubs
@@ -151,7 +154,7 @@ def bookmark():
         body = request.json
         print(body)
         ob = bookmarks.Bookmarks
-        ob.bookmark((body['email'],body['short_code']))
+        ob.bookmark(body['email'],body['short_code'],body['name'])
         return jsonify({"message":"sucessfully Bookmarked"})
 
 
@@ -175,8 +178,9 @@ def findone():
         return val
 
 
-@app.route('/user/bookmark/findall/')
+@app.route('/user/bookmark/findall/<email>')
 def findall(email):
+    print(f"hello{email}")
     bkm = db.bookmarks
     lst = []
     for post in bkm.find({},{'_id':0}):
@@ -190,6 +194,7 @@ if __name__ == "__main__":
     #TODO scheduling scrapping call
     scheduler.add_job(id="Instagram Scrapping",func=events,trigger='interval',days=1)
     scheduler.start()
+
     # Shut down the scheduler when exiting the app
     # atexit.register(lambda: scheduler.shutdown())
     # TODO Valid return statements for all routes
